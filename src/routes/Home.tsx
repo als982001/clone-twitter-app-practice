@@ -7,10 +7,9 @@ export default function Home() {
   const logOut = async () => {
     try {
       await auth.signOut();
+      navigate("/login");
     } catch (e) {
-      console.log(e);
-    } finally {
-      navigate("/");
+      console.log(`error: ${e}`);
     }
   };
 
