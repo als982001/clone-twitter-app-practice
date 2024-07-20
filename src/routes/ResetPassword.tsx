@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signInWithEmailAndPassword } from "firebase/auth";
-
-import { auth } from "../firebase";
 import { FirebaseError } from "firebase/app";
+
 import {
   Error,
   Form,
@@ -12,12 +10,12 @@ import {
   Title,
   Wrapper,
 } from "../Components/AuthComponents";
-import GithubButton from "../Components/GithubButton";
+import { sendPasswordResetEmail } from "firebase/auth";
+import { auth } from "../firebase";
 
-export default function Login() {
+export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
   const navigate = useNavigate();
@@ -27,10 +25,6 @@ export default function Login() {
       target: { name, value },
     } = e;
 
-    if (name === "password") {
-      setPassword(value);
-    }
-
     if (name === "email") {
       setEmail(value);
     }
@@ -39,7 +33,7 @@ export default function Login() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (isLoading || !email || !password) {
+    if (isLoading || !email) {
       setError("모든 칸 다 채우세요.");
       return;
     }
@@ -47,9 +41,9 @@ export default function Login() {
     try {
       setIsLoading(true);
 
-      await signInWithEmailAndPassword(auth, email, password);
+      await sendPasswordResetEmail(auth, email);
 
-      navigate("/");
+      navigate("/login");
     } catch (e) {
       if (e instanceof FirebaseError) {
         setError(e.message);
@@ -72,25 +66,15 @@ export default function Login() {
           required
         />
         <Input
-          onChange={onChange}
-          value={password}
-          name="password"
-          placeholder="Password"
-          type="password"
-          required
+          type="submit"
+          value={isLoading ? "Loading..." : "Reset Password"}
         />
-        <Input type="submit" value={isLoading ? "Loading..." : "Log in"} />
       </Form>
       {error !== "" ? <Error>{error}</Error> : null}
-      <Switcher>
-        <span>Did you forget your password?</span>
-        <Link to="/reset-password">Reset Password &rarr;</Link>
-      </Switcher>
       <Switcher>
         <span>Don't have an account?</span>
         <Link to="/create-account">Create one &rarr;</Link>
       </Switcher>
-      <GithubButton />
     </Wrapper>
   );
 }

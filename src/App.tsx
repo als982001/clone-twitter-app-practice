@@ -13,6 +13,7 @@ import Login from "./routes/Login";
 import CreateAccount from "./routes/CreateAccount";
 import LoadingScreen from "./Components/LoadingScreen";
 import ProtectedRoute from "./Components/ProtectedRoute";
+import ResetPassword from "./routes/ResetPassword";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
   {
     path: "/create-account",
     element: <CreateAccount />,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
   },
 ]);
 
