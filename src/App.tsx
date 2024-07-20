@@ -10,7 +10,7 @@ import { Layout } from "./Components/Layout";
 import Home from "./routes/Home";
 import Profile from "./routes/Profile";
 import Login from "./routes/Login";
-import CreateAccount from "./routes/Create-Account";
+import CreateAccount from "./routes/CreateAccount";
 import LoadingScreen from "./Components/LoadingScreen";
 import ProtectedRoute from "./Components/ProtectedRoute";
 
