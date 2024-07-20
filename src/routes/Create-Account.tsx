@@ -1,5 +1,8 @@
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { auth } from "../firebase";
 
 const Wrapper = styled.div`
   height: 100%;
@@ -48,6 +51,8 @@ export default function CreateAccount() {
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
+  const navigate = useNavigate();
+
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const {
       target: { name, value },
@@ -66,13 +71,29 @@ export default function CreateAccount() {
     }
   };
 
-  const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (isLoading || !name || !email || !password) {
+      setError("모든 칸 다 채우세요.");
+      return;
+    }
+
     try {
+      setIsLoading(true);
+
       // create an account
+      const credentials = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+
       // set the name of the user
+      await updateProfile(credentials.user, { displayName: name });
+
       // redirect to the home page
+      navigate("/");
     } catch {
       setError("");
     } finally {
@@ -82,7 +103,7 @@ export default function CreateAccount() {
 
   return (
     <Wrapper>
-      <Title>Log into 𝕏</Title>
+      <Title>Join into 𝕏</Title>
       <Form onSubmit={onSubmit}>
         <Input
           onChange={onChange}

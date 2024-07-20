@@ -12,11 +12,16 @@ import Profile from "./routes/Profile";
 import Login from "./routes/Login";
 import CreateAccount from "./routes/Create-Account";
 import LoadingScreen from "./Components/LoadingScreen";
+import ProtectedRoute from "./Components/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: (
+      <ProtectedRoute>
+        <Layout />
+      </ProtectedRoute>
+    ),
     children: [
       {
         path: "",
