@@ -1,7 +1,8 @@
 import styled from "styled-components";
-import { auth, db, storage } from "../firebase";
-import { deleteDoc, doc } from "firebase/firestore";
+import { deleteDoc, doc, updateDoc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
+
+import { auth, db, storage } from "../firebase";
 
 const Wrapper = styled.div`
   display: grid;
@@ -30,6 +31,24 @@ const Username = styled.span`
 const Payload = styled.p`
   margin: 10px 0px;
   font-size: 18px;
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`;
+
+const UpdateButton = styled.button`
+  background-color: #74b72e;
+  color: white;
+  font-weight: 600;
+  border: 0;
+  font-size: 12px;
+  padding: 5px 10px;
+  text-transform: uppercase;
+  border-radius: 5px;
+  cursor: pointer;
 `;
 
 const DeleteButton = styled.button`
@@ -68,14 +87,36 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
     }
   };
 
+  const onUpdate = async () => {
+    if (user?.uid !== userId) {
+      return;
+    }
+
+    try {
+      console.log({ username, photo, tweet, userId, id });
+      const tweetRef = doc(db, "tweets", id);
+
+      await updateDoc(tweetRef, { tweet: "임의로 업데이트 시킴 ㅋ" });
+    } catch (e) {
+      console.error(e);
+    } finally {
+      //
+    }
+  };
+
   return (
     <Wrapper>
       <Column>
         <Username>{username}</Username>
         <Payload>{tweet}</Payload>
-        {user?.uid === userId ? (
-          <DeleteButton onClick={onDelete}>Delete</DeleteButton>
-        ) : null}
+        <Buttons>
+          {user?.uid === userId ? (
+            <DeleteButton onClick={onDelete}>Delete</DeleteButton>
+          ) : null}
+          {user?.uid === userId ? (
+            <UpdateButton onClick={onUpdate}>Update</UpdateButton>
+          ) : null}
+        </Buttons>
       </Column>
       <Column>{photo ? <Photo src={photo} /> : null}</Column>
     </Wrapper>
