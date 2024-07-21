@@ -1,5 +1,9 @@
 import { useState } from "react";
+import { addDoc, collection, updateDoc } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import styled from "styled-components";
+
+import { auth, db, storage } from "../firebase";
 
 const Form = styled.form`
   display: flex;
@@ -64,6 +68,10 @@ export default function PostTweetForm() {
   const [tweet, setTweet] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
 
+  const getFileSize = (size: number) => {
+    return size / 1000;
+  };
+
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const {
       target: { value },
@@ -78,13 +86,63 @@ export default function PostTweetForm() {
     } = e;
 
     if (files && files.length === 1) {
-      setFile(files[0]);
+      const file = files[0];
+      const fileSize = getFileSize(file.size);
+
+      if (fileSize > 1500) {
+        alert("파일이 너무 큽니다!");
+        return;
+      }
+
+      setFile(file);
+    }
+  };
+
+  const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const user = auth.currentUser;
+
+    if (!user || isLoading || !tweet || tweet.length > 180) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      const doc = await addDoc(collection(db, "tweets"), {
+        tweet,
+        createdAt: Date.now(),
+        username: user.displayName || "Anonymous",
+        userId: user.uid,
+      });
+
+      if (file) {
+        const locationRef = ref(
+          storage,
+          `tweets/${user.uid}-${user.displayName}/${doc.id}`
+        );
+
+        const result = await uploadBytes(locationRef, file);
+
+        const url = await getDownloadURL(result.ref);
+
+        await updateDoc(doc, { photo: url });
+      }
+
+      setTweet("");
+      setFile(null);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <Form>
+    <Form onSubmit={onSubmit}>
       <TextArea
+        required
         rows={5}
         maxLength={180}
         onChange={onChange}
