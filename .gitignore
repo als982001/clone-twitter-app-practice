@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 src/firebase.ts
+.firebase/hosting.ZGlzdA.cache
+.firebaserc
+firebase.json
 
 # Editor directories and files
 .vscode/*
