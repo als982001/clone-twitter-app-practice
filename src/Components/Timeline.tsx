@@ -16,10 +16,14 @@ const Wrapper = styled.div`
   display: flex;
   gap: 10px;
   flex-direction: column;
-  overflow-y: scroll;
+  overflow-y: auto;
 `;
 
-export default function Timeline() {
+interface IProps {
+  handleUpdate: (updateStatus: boolean) => void;
+}
+
+export default function Timeline({ handleUpdate }: IProps) {
   const [tweets, setTweets] = useState<ITweet[]>([]);
 
   useEffect(() => {
@@ -59,7 +63,7 @@ export default function Timeline() {
   return (
     <Wrapper>
       {tweets.map((tweet) => (
-        <Tweet key={tweet.id} {...tweet} />
+        <Tweet key={tweet.id} tweet={tweet} handleUpdate={handleUpdate} />
       ))}
     </Wrapper>
   );

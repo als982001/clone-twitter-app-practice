@@ -63,7 +63,11 @@ const SubmitBtn = styled.input`
   }
 `;
 
-export default function PostTweetForm() {
+interface IProps {
+  updateTweet: boolean;
+}
+
+export default function PostTweetForm({ updateTweet }: IProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tweet, setTweet] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
@@ -135,6 +139,10 @@ export default function PostTweetForm() {
       setIsLoading(false);
     }
   };
+
+  if (updateTweet) {
+    return <div>ㅋ</div>;
+  }
 
   return (
     <Form onSubmit={onSubmit}>

@@ -1,5 +1,5 @@
 import styled from "styled-components";
-import { deleteDoc, doc, updateDoc } from "firebase/firestore";
+import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 
 import { auth, db, storage } from "../firebase";
@@ -63,7 +63,14 @@ const DeleteButton = styled.button`
   cursor: pointer;
 `;
 
-export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
+interface IProps {
+  tweet: ITweet;
+  handleUpdate: (updateStatus: boolean) => void;
+}
+
+export default function Tweet({ tweet, handleUpdate }: IProps) {
+  const { id, photo, userId, username, tweet: tweetContent } = tweet;
+
   const user = auth.currentUser;
 
   const onDelete = async () => {
@@ -87,34 +94,19 @@ export default function Tweet({ username, photo, tweet, userId, id }: ITweet) {
     }
   };
 
-  const onUpdate = async () => {
-    if (user?.uid !== userId) {
-      return;
-    }
-
-    try {
-      console.log({ username, photo, tweet, userId, id });
-      const tweetRef = doc(db, "tweets", id);
-
-      await updateDoc(tweetRef, { tweet: "임의로 업데이트 시킴 ㅋ" });
-    } catch (e) {
-      console.error(e);
-    } finally {
-      //
-    }
-  };
-
   return (
     <Wrapper>
       <Column>
         <Username>{username}</Username>
-        <Payload>{tweet}</Payload>
+        <Payload>{tweetContent}</Payload>
         <Buttons>
           {user?.uid === userId ? (
-            <DeleteButton onClick={onDelete}>Delete</DeleteButton>
+            <UpdateButton onClick={() => handleUpdate(true)}>
+              Update
+            </UpdateButton>
           ) : null}
           {user?.uid === userId ? (
-            <UpdateButton onClick={onUpdate}>Update</UpdateButton>
+            <DeleteButton onClick={onDelete}>Delete</DeleteButton>
           ) : null}
         </Buttons>
       </Column>
