@@ -65,7 +65,7 @@ const DeleteButton = styled.button`
 
 interface IProps {
   tweet: ITweet;
-  handleUpdate: (updateStatus: boolean) => void;
+  handleUpdate?: (updateStatus: boolean) => void;
 }
 
 export default function Tweet({ tweet, handleUpdate }: IProps) {
@@ -101,7 +101,7 @@ export default function Tweet({ tweet, handleUpdate }: IProps) {
         <Payload>{tweetContent}</Payload>
         <Buttons>
           {user?.uid === userId ? (
-            <UpdateButton onClick={() => handleUpdate(true)}>
+            <UpdateButton onClick={() => handleUpdate && handleUpdate(true)}>
               Update
             </UpdateButton>
           ) : null}
