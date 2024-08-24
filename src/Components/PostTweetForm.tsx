@@ -68,11 +68,7 @@ const Image = styled.img`
   max-width: 100%;
 `;
 
-interface IProps {
-  updateTweet: boolean;
-}
-
-export default function PostTweetForm({ updateTweet }: IProps) {
+export default function PostTweetForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tweet, setTweet] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
@@ -146,10 +142,6 @@ export default function PostTweetForm({ updateTweet }: IProps) {
       setIsLoading(false);
     }
   };
-
-  if (updateTweet) {
-    return <div>ㅋ</div>;
-  }
 
   return (
     <Form onSubmit={onSubmit}>

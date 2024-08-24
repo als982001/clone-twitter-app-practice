@@ -19,11 +19,7 @@ const Wrapper = styled.div`
   overflow-y: auto;
 `;
 
-interface IProps {
-  handleUpdate: (updateStatus: boolean) => void;
-}
-
-export default function Timeline({ handleUpdate }: IProps) {
+export default function Timeline() {
   const [tweets, setTweets] = useState<ITweet[]>([]);
 
   useEffect(() => {
@@ -63,7 +59,7 @@ export default function Timeline({ handleUpdate }: IProps) {
   return (
     <Wrapper>
       {tweets.map((tweet) => (
-        <Tweet key={tweet.id} tweet={tweet} handleUpdate={handleUpdate} />
+        <Tweet key={tweet.id} tweet={tweet} />
       ))}
     </Wrapper>
   );

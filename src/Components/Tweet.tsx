@@ -1,8 +1,10 @@
+import { useState } from "react";
 import styled from "styled-components";
 import { deleteDoc, doc } from "firebase/firestore";
 import { deleteObject, ref } from "firebase/storage";
 
 import { auth, db, storage } from "../firebase";
+import UpdateModal from "./UpdateModal";
 
 const Wrapper = styled.div`
   display: grid;
@@ -65,10 +67,10 @@ const DeleteButton = styled.button`
 
 interface IProps {
   tweet: ITweet;
-  handleUpdate?: (updateStatus: boolean) => void;
 }
 
-export default function Tweet({ tweet, handleUpdate }: IProps) {
+export default function Tweet({ tweet }: IProps) {
+  const [update, setUpdate] = useState<boolean>(false);
   const { id, photo, userId, username, tweet: tweetContent } = tweet;
 
   const user = auth.currentUser;
@@ -95,22 +97,25 @@ export default function Tweet({ tweet, handleUpdate }: IProps) {
   };
 
   return (
-    <Wrapper>
-      <Column>
-        <Username>{username}</Username>
-        <Payload>{tweetContent}</Payload>
-        <Buttons>
-          {user?.uid === userId ? (
-            <UpdateButton onClick={() => handleUpdate && handleUpdate(true)}>
-              Update
-            </UpdateButton>
-          ) : null}
-          {user?.uid === userId ? (
-            <DeleteButton onClick={onDelete}>Delete</DeleteButton>
-          ) : null}
-        </Buttons>
-      </Column>
-      <Column>{photo ? <Photo src={photo} /> : null}</Column>
-    </Wrapper>
+    <>
+      <Wrapper>
+        <Column>
+          <Username>{username}</Username>
+          <Payload>{tweetContent}</Payload>
+          <Buttons>
+            {user?.uid === userId ? (
+              <UpdateButton onClick={() => setUpdate(true)}>
+                Update
+              </UpdateButton>
+            ) : null}
+            {user?.uid === userId ? (
+              <DeleteButton onClick={onDelete}>Delete</DeleteButton>
+            ) : null}
+          </Buttons>
+        </Column>
+        <Column>{photo ? <Photo src={photo} /> : null}</Column>
+      </Wrapper>
+      {update && <UpdateModal closeModal={() => setUpdate(false)} />}
+    </>
   );
 }
