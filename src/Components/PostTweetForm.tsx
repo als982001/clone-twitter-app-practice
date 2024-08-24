@@ -9,6 +9,7 @@ const Form = styled.form`
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 `;
 
 const TextArea = styled.textarea`
@@ -63,6 +64,10 @@ const SubmitBtn = styled.input`
   }
 `;
 
+const Image = styled.img`
+  max-width: 100%;
+`;
+
 interface IProps {
   updateTweet: boolean;
 }
@@ -71,6 +76,7 @@ export default function PostTweetForm({ updateTweet }: IProps) {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [tweet, setTweet] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const getFileSize = (size: number) => {
     return size / 1000;
@@ -99,6 +105,7 @@ export default function PostTweetForm({ updateTweet }: IProps) {
       }
 
       setFile(file);
+      setImageUrl(URL.createObjectURL(file));
     }
   };
 
@@ -154,6 +161,14 @@ export default function PostTweetForm({ updateTweet }: IProps) {
         value={tweet}
         placeholder="Tweet"
       />
+      {file && (
+        <Image
+          src={
+            imageUrl ??
+            "https://pbs.twimg.com/media/GVq9qsxbAAA8oTH?format=jpg&name=4096x4096"
+          }
+        />
+      )}
       <AttachFileButton htmlFor="file">
         {file ? "Photo added ✅" : "Add photo"}
       </AttachFileButton>
