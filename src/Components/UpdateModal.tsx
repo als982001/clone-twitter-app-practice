@@ -100,7 +100,7 @@ interface IProps {
 }
 
 const UpdateModal = ({ tweet, closeModal }: IProps) => {
-  const { id, photo, userId, username, tweet: tweetContent } = tweet;
+  const { id, photo, tweet: tweetContent } = tweet;
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [content, setContent] = useState<string>(tweetContent);
