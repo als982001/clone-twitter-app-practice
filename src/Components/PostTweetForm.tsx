@@ -4,6 +4,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import styled from "styled-components";
 
 import { auth, db, storage } from "../firebase";
+import { getFileSize } from "../utils/functions";
 
 const Form = styled.form`
   display: flex;
@@ -73,10 +74,6 @@ export default function PostTweetForm() {
   const [tweet, setTweet] = useState<string>("");
   const [file, setFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
-
-  const getFileSize = (size: number) => {
-    return size / 1000;
-  };
 
   const onChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const {

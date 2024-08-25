@@ -115,7 +115,9 @@ export default function Tweet({ tweet }: IProps) {
         </Column>
         <Column>{photo ? <Photo src={photo} /> : null}</Column>
       </Wrapper>
-      {update && <UpdateModal closeModal={() => setUpdate(false)} />}
+      {update && (
+        <UpdateModal tweet={tweet} closeModal={() => setUpdate(false)} />
+      )}
     </>
   );
 }
