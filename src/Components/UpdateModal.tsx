@@ -120,10 +120,11 @@ const UpdateModal = ({ tweet, closeModal }: IProps) => {
     try {
       setIsLoading(true);
 
-      const updatedData: { tweet: string; updatedAt: any; photo?: string } = {
-        tweet: content,
-        updatedAt: Date.now(),
-      };
+      const updatedData: { tweet: string; updatedAt: number; photo?: string } =
+        {
+          tweet: content,
+          updatedAt: Date.now(),
+        };
 
       const tweetDocRef = doc(db, "tweets", id);
 
@@ -147,7 +148,7 @@ const UpdateModal = ({ tweet, closeModal }: IProps) => {
   return (
     <>
       <Overlay onClick={closeModal} />
-      <Modal>
+      <Modal onSubmit={handleUpdate}>
         {imageUrl && <Image src={imageUrl} />}
         <AttachFileButton htmlFor="updateFile">
           {file ? "Photo added ✅" : "Add photo"}
@@ -166,7 +167,7 @@ const UpdateModal = ({ tweet, closeModal }: IProps) => {
           {content}
         </Content>
         <Buttons>
-          <Button onClick={handleUpdate} style={{ backgroundColor: "#1d9bf0" }}>
+          <Button type="submit" style={{ backgroundColor: "#1d9bf0" }}>
             수정
           </Button>
           <Button
