@@ -1,11 +1,21 @@
-import { useEffect, useState } from "react";
-import { auth, db, storage } from "../firebase";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { isNull } from "lodash";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { updateProfile } from "firebase/auth";
-import { isNull } from "lodash";
-import { collection, getDocs, limit, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  limit,
+  query,
+  updateDoc,
+  where,
+} from "firebase/firestore";
+
 import Tweet from "../Components/Tweet";
+import { auth, db, storage } from "../firebase";
+import { DeleteButton, UpdateButton } from "../Styles/Buttons";
 
 const Wrapper = styled.div`
   display: flex;
@@ -41,10 +51,32 @@ const Name = styled.span`
   font-size: 22px;
 `;
 
+const NameInput = styled.input`
+  padding: 10px 20px;
+  border-radius: 50px;
+  border: none;
+  width: 50%;
+  font-size: 16px;
+  &[type="submit"] {
+    cursor: pointer;
+    background-color: #1d9bf0;
+    color: white;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+`;
+
 const Tweets = styled.div`
   display: flex;
   width: 100%;
   flex-direction: column;
+  gap: 10px;
+`;
+
+const Buttons = styled.div`
+  display: flex;
+  align-items: center;
   gap: 10px;
 `;
 
@@ -54,8 +86,10 @@ export default function Profile() {
   const [avatar, setAvatar] = useState<string | null | undefined>(
     user?.photoURL
   );
-
   const [tweets, setTweets] = useState<ITweet[]>([]);
+  const [update, setUpdate] = useState<boolean>(false);
+  const [updatedName, setUpdatedName] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const onAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (isNull(user)) {
@@ -104,9 +138,34 @@ export default function Profile() {
     setTweets(tweets);
   };
 
+  const handleChangeName = async () => {
+    if (isLoading || !user) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      await updateProfile(user, { displayName: updatedName });
+
+      const tweetUpdatePromises = tweets.map((tweet) => {
+        const tweetDocRef = doc(db, "tweets", tweet.id);
+
+        return updateDoc(tweetDocRef, { username: updatedName });
+      });
+
+      await Promise.all(tweetUpdatePromises);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setIsLoading(false);
+      setUpdate(false);
+      setUpdatedName("");
+    }
+  };
+
   useEffect(() => {
     fetchTweets();
-  }, []);
+  }, [user?.displayName]);
 
   return (
     <Wrapper>
@@ -130,7 +189,40 @@ export default function Profile() {
         type="file"
         accept="image/*"
       />
-      <Name>{user?.displayName ?? "Anonymous"}</Name>
+      {update ? (
+        <NameInput
+          value={updatedName}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            setUpdatedName(e.target.value)
+          }
+        />
+      ) : (
+        <Name>{user?.displayName ?? "Anonymous"}</Name>
+      )}
+      <Buttons>
+        <UpdateButton
+          onClick={() => {
+            if (update) {
+              handleChangeName();
+            } else {
+              setUpdatedName(user?.displayName as string);
+              setUpdate(true);
+            }
+          }}
+        >
+          Update
+        </UpdateButton>
+        {update && (
+          <DeleteButton
+            onClick={() => {
+              setUpdate(false);
+              setUpdatedName("");
+            }}
+          >
+            Cancel
+          </DeleteButton>
+        )}
+      </Buttons>
       <Tweets>
         {tweets.map((tweet) => (
           <Tweet key={tweet.id} tweet={tweet} />
@@ -139,3 +231,4 @@ export default function Profile() {
     </Wrapper>
   );
 }
+4;

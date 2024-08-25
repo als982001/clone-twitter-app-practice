@@ -1,6 +1,9 @@
-import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
+import { FirebaseError } from "firebase/app";
+import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+
 import { auth } from "../firebase";
 import {
   Form,
@@ -11,7 +14,6 @@ import {
   Wrapper,
 } from "../Components/AuthComponents";
 import GithubButton from "../Components/GithubButton";
-import { FirebaseError } from "firebase/app";
 
 export default function CreateAccount() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
